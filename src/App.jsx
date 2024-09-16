@@ -4,7 +4,7 @@ import ImageGallery from './components/ImageGallery/ImageGallery';
 import Button from './components/Button/Button';
 import Loader from './components/Loader/Loader';
 import Modal from './components/Modal/Modal';
-import { fetchImages } from './api'; // Make sure to create an api.js file for the API call
+import { fetchImages } from './api'; 
 
 const App = () => {
   const [images, setImages] = useState([]);
@@ -14,16 +14,6 @@ const App = () => {
   const [modalImage, setModalImage] = useState('');
   const [showModal, setShowModal] = useState(false);
 
-
-const API_KEY = '44945443-a87852da5247dab1dc66b1659';
-const BASE_URL = 'https://pixabay.com/api/';
-
-export const fetchImages = async (query, page) => {
-  const response = await fetch(`${BASE_URL}?q=${query}&page=${page}&key=${API_KEY}&image_type=photo&orientation=horizontal&per_page=12`);
-  const data = await response.json();
-  return data.hits;
-  };
-  
   useEffect(() => {
     if (query) {
       const loadImages = async () => {
