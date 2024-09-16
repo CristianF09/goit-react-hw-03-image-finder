@@ -4,31 +4,25 @@ import ImageGallery from './components/ImageGallery';
 import Button from './components/Button';
 import Loader from './components/Loader';
 import Modal from './components/Modal';
-import { fetchImages } from './api';  
+import { fetchImages } from './api';
 
 const App = () => {
   const [images, setImages] = useState([]);
   const [query, setQuery] = useState('');
-  const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [modalImage, setModalImage] = useState('');
-  const [showModal, setShowModal] = useState(false);
+  const [selectedImage, setSelectedImage] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalHits, setTotalHits] = useState(0);
 
   useEffect(() => {
     if (query) {
-      const loadImages = async () => {
-        setLoading(true);
-        try {
-          const fetchedImages = await fetchImages(query, page);
-          setImages((prevImages) => [...prevImages, ...fetchedImages]);
-        } catch (error) {
-          console.error('Error fetching images:', error);
-        } finally {
-          setLoading(false);
-        }
-      };
-
-      loadImages();
+      setLoading(true);
+      fetchImages(query, page)
+        .then(({ hits, totalHits }) => {
+          setImages(prevImages => [...prevImages, ...hits]);
+          setTotalHits(totalHits);
+        })
+        .finally(() => setLoading(false));
     }
   }, [query, page]);
 
@@ -38,39 +32,29 @@ const App = () => {
     setPage(1);
   };
 
-  const handleLoadMore = () => {
-    setPage((prevPage) => prevPage + 1);
-  };
-
-  const handleImageClick = (imageUrl) => {
-    setModalImage(imageUrl);
-    setShowModal(true);
+  const handleImageClick = (url) => {
+    setSelectedImage(url);
   };
 
   const handleCloseModal = () => {
-    setShowModal(false);
-    setModalImage('');
+    setSelectedImage('');
+  };
+
+  const handleLoadMore = () => {
+    setPage(prevPage => prevPage + 1);
   };
 
   return (
-    <div
-      style={{
-        height: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        fontSize: 20,
-        color: '#010101',
-        padding: '20px'
-      }}
-    >
+    <div>
       <Searchbar onSubmit={handleSearchSubmit} />
       <ImageGallery images={images} onImageClick={handleImageClick} />
       {loading && <Loader />}
-      {images.length > 0 && !loading && (
-        <Button onClick={handleLoadMore} isVisible={true} />
+      {images.length > 0 && images.length < totalHits && (
+        <Button onClick={handleLoadMore}>Load more</Button>
       )}
-      {showModal && <Modal imageUrl={modalImage} onClose={handleCloseModal} />}
+      {selectedImage && (
+        <Modal imageUrl={selectedImage} onClose={handleCloseModal} />
+      )}
     </div>
   );
 };

@@ -3,7 +3,9 @@ import PropTypes from 'prop-types';
 import styles from './Button.module.css';
 
 const Button = ({ onClick, isVisible }) => {
-  if (!isVisible) return null;
+  if (!isVisible) {
+    return null; 
+  }
 
   return (
     <button className={styles.button} onClick={onClick}>
@@ -17,4 +19,4 @@ Button.propTypes = {
   isVisible: PropTypes.bool.isRequired,
 };
 
-export default Button;
+export default Button
