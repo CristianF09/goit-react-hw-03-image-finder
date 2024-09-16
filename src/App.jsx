@@ -4,7 +4,7 @@ import ImageGallery from './components/ImageGallery/ImageGallery';
 import Button from './components/Button/Button';
 import Loader from './components/Loader/Loader';
 import Modal from './components/Modal/Modal';
-import { fetchImages } from './api'; 
+import { fetchImages } from './api';
 
 const App = () => {
   const [images, setImages] = useState([]);
