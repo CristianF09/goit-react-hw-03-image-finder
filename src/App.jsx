@@ -1,59 +1,48 @@
 import React, { useState, useEffect } from 'react';
-import Searchbar from './components/Searchbar';
-import ImageGallery from './components/ImageGallery';
+import { fetchImages } from './api';
 import Button from './components/Button';
 import Loader from './components/Loader';
-import Modal from './components/Modal';
-import { fetchImages } from './api';
+import ImageGallery from './components/ImageGallery';
 
 const App = () => {
   const [images, setImages] = useState([]);
-  const [query, setQuery] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [selectedImage, setSelectedImage] = useState('');
   const [page, setPage] = useState(1);
-  const [totalHits, setTotalHits] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
-    if (query) {
+    const loadImages = async () => {
       setLoading(true);
-      fetchImages(query, page)
-        .then(({ hits, totalHits }) => {
-          setImages(prevImages => [...prevImages, ...hits]);
-          setTotalHits(totalHits);
-        })
-        .finally(() => setLoading(false));
-    }
-  }, [query, page]);
+      try {
+        const newImages = await fetchImages('cat', page);
 
-  const handleSearchSubmit = (searchQuery) => {
-    setQuery(searchQuery);
-    setImages([]);
-    setPage(1);
-  };
+        // Check if newImages is an array before trying to update state
+        if (Array.isArray(newImages) && newImages.length > 0) {
+          setImages(prevImages => [...prevImages, ...newImages]);
+          setHasMore(true);
+        } else {
+          setHasMore(false); // No more images to load
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleImageClick = (url) => {
-    setSelectedImage(url);
-  };
+    loadImages();
+  }, [page]);
 
-  const handleCloseModal = () => {
-    setSelectedImage('');
-  };
-
-  const handleLoadMore = () => {
+  const loadMoreImages = () => {
     setPage(prevPage => prevPage + 1);
   };
 
   return (
     <div>
-      <Searchbar onSubmit={handleSearchSubmit} />
-      <ImageGallery images={images} onImageClick={handleImageClick} />
-      {loading && <Loader />}
-      {images.length > 0 && images.length < totalHits && (
-        <Button onClick={handleLoadMore}>Load more</Button>
-      )}
-      {selectedImage && (
-        <Modal imageUrl={selectedImage} onClose={handleCloseModal} />
+      <ImageGallery images={images} />
+      {loading && <Loader />} 
+      {images.length > 0 && !loading && hasMore && (
+        <Button onClick={loadMoreImages} visible={true} />
       )}
     </div>
   );
