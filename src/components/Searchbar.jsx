@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
 import styles from './Searchbar.module.css';
 
 const Searchbar = ({ onSubmit }) => {
@@ -7,8 +6,10 @@ const Searchbar = ({ onSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(query);
-    setQuery('');
+    if (query.trim() !== '') {
+      onSubmit(query);
+      setQuery('');
+    }
   };
 
   return (
@@ -22,17 +23,13 @@ const Searchbar = ({ onSubmit }) => {
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search images and photos"
           autoComplete="off"
           autoFocus
-          placeholder="Search images and photos"
         />
       </form>
     </header>
   );
-};
-
-Searchbar.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
 };
 
 export default Searchbar;
