@@ -1,24 +1,24 @@
 import React, { useEffect } from 'react';
 import styles from './Modal.module.css';
 
-const Modal = ({ image, onClose }) => {
+const Modal = ({ imageUrl, onClose }) => {
   useEffect(() => {
-    const handleKeyDown = (event) => {
-      if (event.code === 'Escape') {
+    const handleEsc = (e) => {
+      if (e.code === 'Escape') {
         onClose();
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keydown', handleEsc);
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keydown', handleEsc);
     };
   }, [onClose]);
 
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
-        <img src={image} alt="" />
+      <div className={styles.modal}>
+        <img src={imageUrl} alt="" />
       </div>
     </div>
   );
