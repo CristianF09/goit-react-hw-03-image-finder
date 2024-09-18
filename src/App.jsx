@@ -16,12 +16,12 @@ const App = () => {
       try {
         const newImages = await fetchImages('cat', page);
 
-        // Check if newImages is an array before trying to update state
+        
         if (Array.isArray(newImages) && newImages.length > 0) {
           setImages(prevImages => [...prevImages, ...newImages]);
           setHasMore(true);
         } else {
-          setHasMore(false); // No more images to load
+          setHasMore(false); 
         }
       } catch (error) {
         console.error(error);
