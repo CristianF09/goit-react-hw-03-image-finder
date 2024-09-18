@@ -1,49 +1,57 @@
 import React, { useState, useEffect } from 'react';
-import { fetchImages } from './api';
-import Button from './components/Button';
-import Loader from './components/Loader';
+import { fetchImages } from './api'; // Adjust the path if needed
 import ImageGallery from './components/ImageGallery';
+import Loader from './components/Loader';
+import Button from './components/Button';
+import Searchbar from './components/Searchbar';
 
 const App = () => {
   const [images, setImages] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(true);
+  const [hasMore, setHasMore] = useState(false);
 
   useEffect(() => {
+    if (searchQuery === '') return;
+
     const loadImages = async () => {
       setLoading(true);
       try {
-        const newImages = await fetchImages('cat', page);
-
-        
-        if (Array.isArray(newImages) && newImages.length > 0) {
-          setImages(prevImages => [...prevImages, ...newImages]);
-          setHasMore(true);
+        const fetchedImages = await fetchImages(searchQuery, page);
+        if (Array.isArray(fetchedImages)) {
+          setImages(prevImages => [...prevImages, ...fetchedImages]);
+          setHasMore(fetchedImages.length > 0);
         } else {
-          setHasMore(false); 
+          setImages([]);
+          setHasMore(false);
         }
       } catch (error) {
-        console.error(error);
+        console.error('Error fetching images:', error);
       } finally {
         setLoading(false);
       }
     };
 
     loadImages();
-  }, [page]);
+  }, [searchQuery, page]);
 
-  const loadMoreImages = () => {
+  const handleSearchSubmit = query => {
+    setSearchQuery(query);
+    setImages([]);
+    setPage(1);
+  };
+
+  const handleLoadMore = () => {
     setPage(prevPage => prevPage + 1);
   };
 
   return (
-    <div>
+    <div className="App">
+      <Searchbar onSubmit={handleSearchSubmit} />
       <ImageGallery images={images} />
-      {loading && <Loader />} 
-      {images.length > 0 && !loading && hasMore && (
-        <Button onClick={loadMoreImages} visible={true} />
-      )}
+      {loading && <Loader />}
+      {hasMore && !loading && <Button onClick={handleLoadMore} />}
     </div>
   );
 };

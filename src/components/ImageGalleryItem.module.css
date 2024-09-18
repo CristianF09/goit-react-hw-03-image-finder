@@ -2,8 +2,8 @@
   cursor: pointer;
 }
 
-.galleryItem img {
-  display: block;
+.image {
   width: 100%;
   height: auto;
+  display: block;
 }

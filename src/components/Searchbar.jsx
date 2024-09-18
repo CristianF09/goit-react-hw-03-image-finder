@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import PropTypes from 'prop-types';
-import styles from './Searchbar.module.css'; 
+import styles from './Searchbar.module.css'; // This is fine in JSX files
+
 const Searchbar = ({ onSubmit }) => {
   const [query, setQuery] = useState('');
 
@@ -10,12 +10,8 @@ const Searchbar = ({ onSubmit }) => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (query.trim() === '') {
-      alert('Please enter a search query');
-      return;
-    }
     onSubmit(query);
-    setQuery(''); 
+    setQuery('');
   };
 
   return (
@@ -24,6 +20,7 @@ const Searchbar = ({ onSubmit }) => {
         <button type="submit" className={styles.button}>
           <span className={styles['button-label']}>Search</span>
         </button>
+
         <input
           className={styles.input}
           type="text"
@@ -36,10 +33,6 @@ const Searchbar = ({ onSubmit }) => {
       </form>
     </header>
   );
-};
-
-Searchbar.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
 };
 
 export default Searchbar;
